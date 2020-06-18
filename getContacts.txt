@@ -1,0 +1,26 @@
+public static ArrayList<GPerson> getContacts(Context context){
+    Cursor cursor=context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,null);
+    ArrayList<GPerson>invites=new ArrayList<>();
+    if (cursor!=null) {
+        while (cursor.moveToNext()) {
+            String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            number = number.replaceAll("\\s", "");
+            if (number.charAt(0) != '+')
+                number = "+91" + number;
+            GPerson map = new GPerson();
+            map.name=name;
+            map.number=number;
+            boolean found=false;
+            for (GPerson p:invites)
+                if (p.number.equals(map.number)){
+                    found=true;
+                    break;
+                }
+            if (!found)
+                invites.add(map);
+        }
+        cursor.close();
+    }
+    return invites;
+}
