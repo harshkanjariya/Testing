@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Table</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<!-- Latest compiled and minified CSS 
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>-->
+	<link rel="stylesheet" type="text/css" href="bootstrap.css">
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="bootstrap.js"></script>
+    <style type="text/css">
+    	body{
+    		background-color: #eef0f8;
+    		font-family: sans-serif;
+    	}
+    	.card{
+    		background-color: white;
+    		padding: 20px;
+    		border-radius: 5px;
+    		margin: 10px;
+    		box-shadow: 0px 0px 10px -5px #ccc;
+    	}
+    	#filterdiv{
+    		width: 100%;
+    		padding: 10px 0px;
+    	}
+    	.form-field{
+    		padding: 8px;
+    		border: 1px solid #e4e6ef;
+    		background-clip: padding-box;
+    		font-size: 13px;
+    		border-radius: 3px;
+    		color: #3f4254;
+    		text-decoration-color: #ceceda;
+    		font-weight: 400;
+    	}
+    	::placeholder{
+    		color: #bebeca;
+    	}
+    	.form-field:focus{
+    		outline: none;
+    	}
+    	table.table>tbody>tr>td,
+    	table.table>thead>tr>th{
+    		padding: 12px 8px!important;
+    	}
+    	table{
+    		overflow-x: auto;
+    	}
+    	i{
+    		float: right;
+    		color:lightgray;
+    	}
+    	.entries{
+    		display: inline-block;
+    		float: left;
+    	}
+    	#searchbox{
+    		margin-left: 10px;
+    	}
+    	.pagignation{
+    		display: inline-block;
+    		cursor: pointer;
+    	}
+    	.pagignation span{
+    		float: left;
+    		background-color: #e0e0e0;
+    	}
+    	.pagignation-prev{
+    		border-bottom-left-radius: 20px;
+    		border-top-left-radius: 20px;
+    		padding: 8px 5px 8px 15px;
+    	}
+    	.pagignation-next{
+    		border-bottom-right-radius: 20px;
+    		border-top-right-radius: 20px;
+    		padding: 8px 15px 8px 5px;
+    	}
+    	#page-numbers{
+    		display: none;
+    	}
+    	#page-numbers span{
+    		display: inline-block;
+    		padding: 8px 10px;
+    	}
+    </style>
+</head>
+<body>
+	<div class="card">
+		<h1 style="margin: 0px;">Table</h1>
+		<div id="filterdiv">
+			<div class="entries">
+				Show <select class="form-field" onchange="setPageCount(this)">
+					<option>10</option>
+					<option>25</option>
+					<option>50</option>
+					<option>100</option>
+				</select> Entries
+			</div>
+			<input class="form-field" id="searchbox" type="text" placeholder="Search..." oninput="filter(this.value)">
+		</div>
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr id="heads">
+						<th>first name</th>
+						<th>number</th>
+						<th>email</th>
+						<th>first name</th>
+						<th>number</th>
+						<th>email</th>
+					</tr>
+				</thead>
+				<tbody id="databody">
+					<tr>
+						<td>first name</td>
+						<td>number</td>
+						<td>email</td>
+						<td>first name</td>
+						<td>number</td>
+						<td>email</td>
+					</tr>
+					<tr>
+						<td>first name</td>
+						<td>number</td>
+						<td>email</td>
+						<td>first name</td>
+						<td>number</td>
+						<td>email</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div style="text-align: right;">
+			<div class="pagignation">
+				<span class="pagignation-prev" onclick="if(page>0)setPage(page-1);">Previous</span>
+				<span id="page-numbers"></span>
+				<span class="pagignation-next" onclick="if((page+1)*perpagerows<data.length)setPage(page+1);">Next</span>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var original=[{"sr no":1,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":2,"first":"zoham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":3,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":4,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":5,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":6,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":7,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":9,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":24,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":14,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":34,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":63,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":89,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":423,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":32,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":10,"first":"aarsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":190,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":5,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":89,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":423,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":32,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":10,"first":"aarsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":190,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":5,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":6,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":6,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":7,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":9,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":24,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":14,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":34,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":63,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":89,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":423,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":32,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":10,"first":"aarsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":190,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":24,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"},
+					{"sr no":6,"first":"harsh","last":"kanjariya","number":"7802004735","status":"warm"},
+					{"sr no":6,"first":"soham","last":"patel","number":"180374","status":"snjh"},
+					{"sr no":3,"first":"jeet","last":"makwana","number":"289475","status":"sjdg"}];
+		var data;
+		var head=document.getElementById('heads');
+		var databody=document.getElementById('databody');
+		var pagenumbers=document.getElementById('page-numbers');
+		var s='',sorted=null;
+		for(var k in original[0]){
+			s+=`<th onclick="hsort('${k}')">${k}<i>&#9650;</i><i>&#9660;</i></th>`;
+		}
+		head.innerHTML=s;
+		var page=0,perpagerows=10,col='#27b842';
+		function filter(str='',key=null){
+			data=[];
+			str=''+str;
+			if(str=='')
+				for (var i = original.length - 1; i >= 0; i--) {
+					data.push(original[i]);
+				}
+			else{
+				for (var i = 0; i < original.length; i++) {
+					if(key!=null){
+						if(str.indexOf(''+original[i][key])>=0)
+							data.push(original[i]);
+					}else{
+						for(var k in original[i]){
+							if((''+original[i][k]).indexOf(str)>=0){
+								data.push(original[i]);
+								break;
+							}
+						}
+					}
+				}
+			}
+			loadPage();
+		}
+		filter();
+		function setPage(i) {
+			page=i;
+			loadPageNumbers();
+			loadPage();
+		}
+		function setPageCount(e) {
+			perpagerows=parseInt(e.value);
+			loadPageNumbers();
+			loadPage();
+		}
+		function loadPageNumbers(){
+			var num=Math.floor(data.length/perpagerows);
+			if(data.length%perpagerows>0)num++;
+			s='';
+			for(var i=0;i<num;i++){
+				if(i==page)
+					s+=`<span onclick="setPage(${i})" style="background-color:${col};color:white;">${i+1}</span>`;
+				else
+					s+=`<span onclick="setPage(${i})">${i+1}</span>`;
+			}
+			pagenumbers.style.display="inline-block";
+			pagenumbers.innerHTML=s;
+		}
+		loadPageNumbers();
+		function loadPage(){
+			s='';
+			for(var i=0;i<perpagerows;i++){
+				s+='<tr>';
+				for(var k in data[i+page*perpagerows]){
+					s+='<td>'+data[i+page*perpagerows][k]+'</td>';
+				}
+				s+='</tr>';
+			}
+			databody.innerHTML=s;
+		}
+		function loadHeads(key){
+			s='';
+			for(var k in data[0]){
+				if(typeof(sorted)=="boolean" && k==key){
+					if(sorted)
+						s+=`<th onclick="hsort('${k}')">${k}<i>&#9650;</i><i style="color:black;">&#9660;</i></th>`;
+					else
+						s+=`<th onclick="hsort('${k}')">${k}<i style="color:black;">&#9650;</i><i>&#9660;</i></th>`;
+				}else
+					s+=`<th onclick="hsort('${k}')">${k}<i>&#9650;</i><i>&#9660;</i></th>`;
+			}
+			head.innerHTML=s;
+		}
+		function hsort(key){
+			if(typeof(sorted)!="boolean" || sorted!=true)sorted=true;
+			else sorted=false;
+			loadHeads(key);
+			data.sort(function(a,b){
+				var x = a[key]; var y = b[key];
+				if(sorted)
+					return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+				else
+					return ((x > y) ? -1 : ((x > y) ? 1 : 0));
+			});
+			loadPage(page);
+		}
+		loadPage(0);
+	</script>
+</body>
+</html>
