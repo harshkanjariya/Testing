@@ -3,7 +3,7 @@ class HTable{
 		if(data!=null)
 			this.original=data;
 		else
-			original=[];
+			this.original=[];
 		e.innerHTML=`<h1 id="htable-heading">Table</h1>
 <div id="htable-filterdiv">
 	<div id="htable-entries">
@@ -59,6 +59,13 @@ class HTable{
 		this.loadPage(0);
 		this.loadPageNumbers();
 	}
+	setData(d){
+	    this.original=d;
+		this.filter('',Object.keys(this.original)[0]);
+		this.loadHeads(Object.keys(this.original)[0]);
+		this.loadPage(0);
+		this.loadPageNumbers();
+	}
 	filter(str='',key=null){
 		this.data=[];
 		str=''+str;
@@ -82,6 +89,8 @@ class HTable{
 			}
 		}
 		this.loadPage();
+		this.setPage(0);
+		this.loadPageNumbers();
 	}
 	setPage(i) {
 		this.page=i;
@@ -128,14 +137,14 @@ class HTable{
 		for(var k in this.data[0]){
 			var th=document.createElement('th');
 			s=k;
-			if(k==key){
-				if(this.sorted){
-					s+='<i>&#9650;</i><i style="color:black;">&#9660;</i>';
-				}else{
-					s+='<i style="color:black;">&#9650;</i><i>&#9660;</i>';
-				}
-			}else{
-				s+='<i>&#9650;</i><i>&#9660;</i>';
+			console.log(key);
+			if(k!=key)
+			    th.className="asc desc";
+			else{
+			    if(this.sorted)
+			        th.className="asc";
+			    else
+			        th.className="desc";
 			}
 			th.innerHTML=s;
 			var obj=this;
@@ -146,7 +155,6 @@ class HTable{
 		}
 	}
 	hsort(key){
-		key=key.substr(0,key.indexOf('<'));
 		if(typeof(this.sorted)!="boolean" || this.sorted!=true)this.sorted=true;
 		else this.sorted=false;
 		this.loadHeads(key);
