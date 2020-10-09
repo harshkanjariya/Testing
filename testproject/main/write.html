@@ -54,7 +54,7 @@
     <textarea oninput="changed(this)"></textarea>
     <script type="text/javascript">
         var db=firebase.database().ref();
-        function changed(e) {
+        function changed(e){
             db.child('text').set(e.value);
         }
     </script>

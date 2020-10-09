@@ -32,7 +32,9 @@
         appId: "1:670501975622:web:a81916309efc6a8010bc47"
       };
       // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
+		if (!firebase.apps.length) {
+		   firebase.initializeApp(firebaseConfig);
+		}
     </script>
     <style type="text/css">
         body{
@@ -51,11 +53,11 @@
     </style>
   </head>
 <body>
-    <textarea id="area"></textarea>
+	<textarea></textarea>
     <script type="text/javascript">
         var db=firebase.database().ref();
         db.child('text').on('value',(snap)=>{
-            $('#area').html(snap.val());
+            $('textarea').val(snap.val());
         });
     </script>
 </body>

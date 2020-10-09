@@ -1,0 +1,57 @@
+public void smoothv2(double factor, Polyline line, float[] distance){
+		List<LatLng> points = line.getPoints();
+		if (points.size()<3)return;
+		List<LatLng> newpoints = new ArrayList<>();
+		ArrayList<Double> distances = new ArrayList<>();
+		float[] d = new float[1];
+		Location.distanceBetween(points.get(0).latitude, points.get(0).longitude, points.get(1).latitude, points.get(1).longitude, d);
+		distances.add((double) d[0]);
+		Location.distanceBetween(points.get(1).latitude, points.get(1).longitude, points.get(2).latitude, points.get(2).longitude, d);
+		distances.add((double) d[0]);
+		short lastdir = getDirection(points.get(0), points.get(1), points.get(2));
+		int stop=0;
+		for (int i = 3; i < points.size(); i++) {
+			Location.distanceBetween(points.get(i - 1).latitude, points.get(i - 1).longitude, points.get(i).latitude, points.get(i).longitude, d);
+			distances.add((double) d[0]);
+			short cur = getDirection(points.get(i - 2), points.get(i - 1), points.get(i));
+			if (cur != lastdir) {
+				double td = 0;
+				for (int x = stop; x < i - 1; x++)
+					td += distances.get(x);
+				Location.distanceBetween(points.get(stop).latitude, points.get(stop).longitude, points.get(i - 1).latitude, points.get(i - 1).longitude, d);
+				if (td - d[0] < factor) {
+					newpoints.add(points.get(stop));
+				} else {
+					for (int x = stop; x < i - 2; x++)
+						newpoints.add(points.get(x));
+				}
+				stop = i - 1;
+				lastdir = cur;
+			}
+		}
+		if (stop != points.size() - 1) {
+			double td = 0;
+			for (int x = stop; x < points.size() - 1; x++)
+				td += distances.get(x);
+			Location.distanceBetween(points.get(stop).latitude, points.get(stop).longitude, points.get(points.size() - 1).latitude, points.get(points.size() - 1).longitude, d);
+			if (td - d[0] < factor) {
+				newpoints.add(points.get(stop));
+				newpoints.add(points.get(points.size()-1));
+			} else {
+				for (int x = stop; x < points.size() - 1; x++)
+					newpoints.add(points.get(x));
+			}
+		}
+		LatLng last=null;
+		float[] tmp =new float[1];
+		distance[0]=0;
+		for (LatLng ll:newpoints){
+			if (last==null)last=ll;
+			else{
+				Location.distanceBetween(ll.latitude,ll.longitude,last.latitude,last.longitude,tmp);
+				distance[0]+=tmp[0];
+				last=ll;
+			}
+		}
+		line.setPoints(newpoints);
+	}
