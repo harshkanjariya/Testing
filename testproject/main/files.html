@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HKApp</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <!-- update the version number as needed -->
+    <!-- include only the Firebase features as you need -->
+    <script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-database.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-messaging.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-storage.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <!-- <script defer src="https://www.gstatic.com/firebasejs/init.js"></script> -->
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.4/firebase.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyAqChvOH_Ix2sy8hk1wuHstAhfrTyoxH0w",
+        authDomain: "hk-site.firebaseapp.com",
+        databaseURL: "https://hk-site.firebaseio.com",
+        projectId: "hk-site",
+        storageBucket: "hk-site.appspot.com",
+        messagingSenderId: "670501975622",
+        appId: "1:670501975622:web:a81916309efc6a8010bc47"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+    <style type="text/css">
+        body{
+            margin: 0px;
+        }
+		table{
+			width: 100vw;
+		}
+		td{
+			padding: 20px;
+			border: 1px solid black;
+		}
+        .file{
+        	width: 100px;
+            height: 100px;
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background-color: green;
+            border-radius: 50%;
+        }
+        .file span{
+            width: 30px;
+            height: 5px;
+            display: block;
+            background: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
+        .file span:last-of-type{
+            transform: translate(-50%,-50%) rotate(90deg) ;
+        }
+    </style>
+  </head>
+<body>
+    <div class="file" onclick="$('[name=file]').click()">
+        <span></span>
+        <span></span>
+    </div>
+	<input type="file" name="file" style="display: none" multiple>
+	<div id="progress" style="position: absolute;display: inline-block"></div>
+	<table cellspacing="0"></table>
+	<a download id="downloader" target="_blank"></a>
+	<script type="text/javascript">
+        $('.file span')
+
+        var db=firebase.database().ref();
+        var fileList;
+        db.child('files').on('value',(snap)=>{
+            fileList=snap.val();
+            $('table').html('');
+            if (fileList)
+            Object.keys(fileList).forEach(function(key){
+				addRow(key,fileList[key]);
+            });
+        });
+
+		var storage=firebase.storage().ref();
+		function addRow(id,name){
+			var e=$('<tr></tr>');
+			var n=$('<td class="name">'+name+'</td>');
+			$(n).click(function(){
+				$('#file').click();
+			});
+			var download=$('<td class="download">Download</td>');
+			$(download).click(function(){
+				storage.child(name).getDownloadURL().then(function(url){
+					downloadURI(url);
+				});
+			});
+			var del=$('<td class="delete">Delete</td>');
+			$(del).click(function(){
+				storage.child(name).delete().then(function(){
+					db.child('files/'+id).remove();
+				});
+			});
+			$(e).append(n);
+			$(e).append(download);
+			$(e).append(del);
+			$('table').append(e);
+		}
+		$('#file').change(function(e){
+			var files=e.target.files
+			console.log(files);
+			for (var i = files.length - 1; i >= 0; i--)(function(i){				
+				var file=files[i];
+				var ref=storage.child(file.name);
+				var task=ref.put(file);
+
+				task.on('state_changed', function progress(snapshot) {
+					var percentage = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
+					$('#progress').html(percentage+"% uploaded");
+				},function error(err) {
+					$('#progress').html(err);
+				},function complete() {
+					$('#progress').html('complete.');
+					var exist=false;
+		            if (fileList)
+		            Object.keys(fileList).forEach(function(key){
+		            	if(file.name==fileList[key])
+		            		exist=true;
+		            });
+		        	if(!exist)
+					db.child('files/'+new Date().getTime()).set(file.name);
+				});
+			})(i);
+		});
+		function downloadURI(uri, name) {
+			var link = document.getElementById("downloader");
+			link.href = uri;
+			link.click();
+		}
+		// storage.listAll().then(function(ref){
+		// 	ref.items.forEach(function(item){
+		// 		addRow(item.fullPath);
+		// 	});
+		// });
+    </script>
+</body>
+</html>
