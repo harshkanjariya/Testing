@@ -1,64 +1,246 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HKApp</title>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <!-- update the version number as needed -->
-    <!-- include only the Firebase features as you need -->
-    <script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-auth.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-database.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-messaging.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-storage.js"></script>
-    <!-- initialize the SDK after all desired features are loaded -->
-    <!-- <script defer src="https://www.gstatic.com/firebasejs/init.js"></script> -->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>HKApp</title>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<!-- update the version number as needed -->
+	<!-- include only the Firebase features as you need -->
+	<script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-auth.js"></script>
+	<script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-database.js"></script>
+	<script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-messaging.js"></script>
+	<script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-storage.js"></script>
+	<!-- initialize the SDK after all desired features are loaded -->
+	<!-- <script defer src="https://www.gstatic.com/firebasejs/init.js"></script> -->
 
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/7.15.4/firebase.js"></script>
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.15.4/firebase.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-         https://firebase.google.com/docs/web/setup#available-libraries -->
+	<!-- TODO: Add SDKs for Firebase products that you want to use
+		 https://firebase.google.com/docs/web/setup#available-libraries -->
 
-    <script>
-      // Your web app's Firebase configuration
-      var firebaseConfig = {
-        apiKey: "AIzaSyAqChvOH_Ix2sy8hk1wuHstAhfrTyoxH0w",
-        authDomain: "hk-site.firebaseapp.com",
-        databaseURL: "https://hk-site.firebaseio.com",
-        projectId: "hk-site",
-        storageBucket: "hk-site.appspot.com",
-        messagingSenderId: "670501975622",
-        appId: "1:670501975622:web:a81916309efc6a8010bc47"
-      };
-      // Initialize Firebase
-		if (!firebase.apps.length) {
-		   firebase.initializeApp(firebaseConfig);
+	<script>
+		// Your web app's Firebase configuration
+		var firebaseConfig = {
+			apiKey: "AIzaSyAqChvOH_Ix2sy8hk1wuHstAhfrTyoxH0w",
+			authDomain: "hk-site.firebaseapp.com",
+			databaseURL: "https://hk-site.firebaseio.com",
+			projectId: "hk-site",
+			storageBucket: "hk-site.appspot.com",
+			messagingSenderId: "670501975622",
+			appId: "1:670501975622:web:a81916309efc6a8010bc47"
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+		let auth = firebase.auth();
+		function signin() {
+			var provider = new firebase.auth.GoogleAuthProvider();
+			auth.signInWithRedirect(provider);
+			auth.getRedirectResult()
+				.then(function (result) {})
+				.error(function (e) {});
 		}
-    </script>
-    <style type="text/css">
+	</script>
+	<style type="text/css">
         body{
-            margin: 0px;
+			font-family: sans-serif;
+            margin: 0;
+			display: flex;
+			flex-direction: row;
+			height: 100vh;
         }
         textarea{
-            width: calc(100vw - 10px);
-            height: calc(100vh - 10px);
-            border: 0px;
+			flex: 1;
+            border: 1px solid black;
             resize: none;
             font-size: 15px;
         }
         textarea:focus{
             outline: none;
         }
-    </style>
-  </head>
+		.menu{
+			height: 100vh;
+			width: 300px;
+			overflow: hidden;
+			position: fixed;
+			left: 0;
+			top: 0;
+			box-shadow: 0 0 10px -3px black;
+			transition: .3s;
+			transform: translateX(-100%);
+			background-color: white;
+			display: flex;
+			flex-direction: column;
+		}
+		.menu.active{
+			transform: translateX(0%);
+		}
+		.menu ul{
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+		.menu ul li{
+			padding: 10px;
+		}
+		.menu-btn{
+			width: 50px;
+			height: 50px;
+			background-color: green;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.user-list{
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+		}
+		.user-list li{
+			padding: 5px;
+		}
+		.user-list li.active{
+			background-color: #a0a0a0;
+			color: white;
+		}
+		.user-list li:hover{
+			background-color: #f0f0f0;
+		}
+		.column{
+			width: 200px;
+		}
+		.menu .user-list{
+			display: none;
+		}
+		@media (max-width: 400px) {
+			body{
+				flex-direction: column;
+			}
+			.column{
+				width: 50px;
+			}
+			.menu .user-list{
+				display: block;
+			}
+			.user-list li:hover{
+				background-color: #a0a0a0;
+			}
+			.column .user-list{
+				display: none;
+			}
+        }
+	</style>
+</head>
 <body>
-	<textarea></textarea>
-    <script type="text/javascript">
-        var db=firebase.database().ref();
-        db.child('text').on('value',(snap)=>{
-            $('textarea').val(snap.val());
-        });
-    </script>
+	<div class="menu">
+		<div style="display: flex; flex-direction: row-reverse; padding: 5px">
+			<i class="fa fa-close" style="font-size: 26px;" onclick="$menu.removeClass('active')"></i>
+		</div>
+		<ul class="user-list"></ul>
+		<ul>
+			<li></li>
+			<li onclick="auth.signOut().then(function() {
+			  location.reload();
+			});">Logout</li>
+		</ul>
+	</div>
+	<div class="column">
+		<div class="menu-btn">
+			<i class="fa fa-bars" style="color: white; font-size: 26px"></i>
+		</div>
+		<ul class="user-list"></ul>
+	</div>
+	<textarea oninput="changed(this);"></textarea>
 </body>
+<script type="text/javascript">
+	let db=firebase.database().ref();
+
+	var current;
+	let myEmail;
+	auth.onAuthStateChanged(function (user) {
+		if (user){
+			let email = user.email.replaceAll('.',',');
+			myEmail = email;
+			db.child('/user/'+email).once('value',function (snap) {
+				current = 'Public';
+				if(snap.exists()){
+					let v = snap.val();
+					if (v.open){
+						current = v.open;
+					}else{
+						db.child('/user/'+email).set({
+							open:'Public'
+						});
+					}
+				}else{
+					db.child('/user/'+email).set({
+						open:'Public'
+					});
+				}
+				db.child('/user').on('value',(snap)=>{
+					let u = snap.val();
+					let $ul = $('.user-list');
+					if (current==='Public'){
+						$ul.html('<li class="active">Public</li>');
+ 					}else{
+						$ul.html('<li">Public</li>');
+					}
+					for (usr in u){
+						if(usr!==email){
+							let e = usr.replaceAll(',','.');
+							if (usr===current){
+								$ul.append(`<li class="active">${e}</li>`);
+							}else{
+								$ul.append(`<li>${e}</li>`);
+							}
+						}
+					}
+					$('li',$ul).click(function () {
+						$('li',$ul).removeClass('active');
+						$(this).addClass('active');
+						current = this.innerHTML.replaceAll('.',',');
+						db.child('/user/'+myEmail+'/open').set(current);
+						onUserChange();
+					});
+					onUserChange();
+				});
+			});
+		}else{
+			signin();
+		}
+	});
+
+	let $menu = $('.menu');
+	$('.menu-btn').click(function () {
+		$menu.toggleClass('active');
+	});
+
+	let currentNode;
+
+	function changed(e){
+		currentNode.set(e.value);
+	}
+	function onUserChange() {
+		if (currentNode)
+			currentNode.off();
+		else if(!current)
+			current = 'Public';
+		if (current==='Public')
+			currentNode = db.child('text');
+		else {
+			let nd = current+'_'+myEmail;
+			if(current.localeCompare(myEmail)===-1)
+				nd = myEmail+'_'+current;
+			currentNode = db.child('all/'+nd);
+		}
+		currentNode.on('value',(snap)=>{
+			$('textarea').val(snap.val());
+		});
+	}
+	console.log('version 3.0.0');
+</script>
 </html>

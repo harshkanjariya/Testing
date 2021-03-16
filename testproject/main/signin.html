@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>HKApp</title>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<!-- update the version number as needed -->
+	<!-- include only the Firebase features as you need -->
+	<script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-auth.js"></script>
+	<script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-database.js"></script>
+	<script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-messaging.js"></script>
+	<script defer src="https://www.gstatic.com/firebasejs/7.15.4/firebase-storage.js"></script>
+	<!-- initialize the SDK after all desired features are loaded -->
+	<!-- <script defer src="https://www.gstatic.com/firebasejs/init.js"></script> -->
+
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.15.4/firebase.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<!-- TODO: Add SDKs for Firebase products that you want to use
+		 https://firebase.google.com/docs/web/setup#available-libraries -->
+
+	<script>
+		// Your web app's Firebase configuration
+		var firebaseConfig = {
+			apiKey: "AIzaSyAqChvOH_Ix2sy8hk1wuHstAhfrTyoxH0w",
+			authDomain: "hk-site.firebaseapp.com",
+			databaseURL: "https://hk-site.firebaseio.com",
+			projectId: "hk-site",
+			storageBucket: "hk-site.appspot.com",
+			messagingSenderId: "670501975622",
+			appId: "1:670501975622:web:a81916309efc6a8010bc47"
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+	</script>
+	<style type="text/css">
+        body{
+			font-family: sans-serif;
+            margin: 0;
+			display: flex;
+			flex-direction: row;
+			height: 100vh;
+        }
+        textarea{
+			flex: 1;
+            border: 1px solid black;
+            resize: none;
+            font-size: 15px;
+        }
+        textarea:focus{
+            outline: none;
+        }
+		.menu{
+			height: 100vh;
+			width: 200px;
+			position: fixed;
+			left: 0;
+			top: 0;
+			box-shadow: 0 0 10px -3px black;
+			transition: .3s;
+			transform: translateX(-100%);
+			background-color: white;
+		}
+		.menu.active{
+			transform: translateX(0%);
+		}
+		.menu ul{
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+		.menu ul li{
+			padding: 10px;
+		}
+		.menu-btn{
+			width: 50px;
+			height: 50px;
+			background-color: green;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	</style>
+</head>
+<body>
+	<div class="menu">
+		<i class="fa fa-close" style="position: absolute;right: 10px;top:10px; font-size: 26px;" onclick="$menu.removeClass('active')"></i>
+		<ul>
+			<li></li>
+			<li>Logout</li>
+		</ul>
+	</div>
+	<div class="menu-btn">
+		<i class="fa fa-bars" style="color: white; font-size: 26px"></i>
+	</div>
+	<textarea oninput="changed(this);"></textarea>
+</body>
+<script type="text/javascript">
+	let $menu = $('.menu');
+	$('.menu-btn').click(function () {
+		$menu.toggleClass('active');
+	});
+
+	var db=firebase.database().ref();
+	db.child('text').on('value',(snap)=>{
+		$('textarea').val(snap.val());
+	});
+	function changed(e){
+		db.child('text').set(e.value);
+		console.log('change');
+	}
+	console.log('version 2.0.0');
+</script>
+</html>
