@@ -187,7 +187,7 @@
 					if (current==='Public'){
 						$ul.html('<li class="active">Public</li>');
  					}else{
-						$ul.html('<li">Public</li>');
+						$ul.html('<li>Public</li>');
 					}
 					for (usr in u){
 						if(usr!==email){
@@ -202,10 +202,7 @@
 					$('li',$ul).click(function () {
 						$('li',$ul).removeClass('active');
 						$(this).addClass('active');
-						if(this.innerHTML=='Public')
-							current='Public';
-						else
-							current = this.innerHTML.replaceAll('.',',');
+						current = this.innerHTML.replaceAll('.',',');
 						db.child('/user/'+myEmail+'/open').set(current);
 						onUserChange();
 					});
