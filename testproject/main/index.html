@@ -202,7 +202,10 @@
 					$('li',$ul).click(function () {
 						$('li',$ul).removeClass('active');
 						$(this).addClass('active');
-						current = this.innerHTML.replaceAll('.',',');
+						if(this.innerHTML=='Public')
+							current='Public';
+						else
+							current = this.innerHTML.replaceAll('.',',');
 						db.child('/user/'+myEmail+'/open').set(current);
 						onUserChange();
 					});
